@@ -1,6 +1,6 @@
 const mongoose = require(`mongoose`);
 
-const userTony = new mongoose.Tony({
+const userSchema = new mongoose.Schema({
 
     username:{
         type:String,
@@ -12,8 +12,8 @@ const userTony = new mongoose.Tony({
     },
     role:{
         type:String,
-        required:[true, `El rol es obligatorio`],
+        required:[true, `El roll es obligatorio`],
     }
 
 });
-module.exports = mongoose.model(`User`, userTony);
+module.exports = mongoose.model(`User`, userSchema);

@@ -7,6 +7,13 @@ const jwt = require(`jsonwebtoken`);
  const mongoose = require (`mongoose`);
  const dotenv = require (`dotenv`);
 
+ dotenv.config({path:`./config.env`});
+
+ //Rutas aqui
+ const userRoutes = require (`./routes/userRoutes`);
+
+
+
  const app = express(); // app es una instancia de express
  app.use(cors()); // permitir peticiones de otros dominios
 
@@ -14,10 +21,24 @@ const jwt = require(`jsonwebtoken`);
 app.use(express.static(`${__dirname}/public`));
 
 app.set(`jwtkey`,`Raton%020400%`); //Clave secreta para firmar tokens
-
-
+ 
 
 const port = 3001;
+
+app.use('/api/users',userRoutes);
+
+ //conectar a la base de datos
+ const DB = process.env.DATABASE;
+
+ mongoose.connect(DB,{
+
+ }).then (connection=>{
+     console.log("Conectado a la base")
+ });
+   
+
+
+
 
 app.listen(port,()=>{
 console.log(`Servidor corriendo en http://localhost:${port}`);

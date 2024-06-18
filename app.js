@@ -11,6 +11,7 @@ const jwt = require(`jsonwebtoken`);
 
  //Rutas aqui
  const userRoutes = require (`./routes/userRoutes`);
+ const FraccionamientosRoutes = require('./routes/FraccionamientosRoutes')
 
 
 
@@ -26,6 +27,8 @@ app.set(`jwtkey`,`Raton%020400%`); //Clave secreta para firmar tokens
 const port = 3001;
 
 app.use('/api/users',userRoutes);
+app.use('/api/fracc',FraccionamientosRoutes);
+
 
  //conectar a la base de datos
  const DB = process.env.DATABASE;

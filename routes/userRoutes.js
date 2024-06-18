@@ -1,7 +1,7 @@
 const express = require('express');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-
+const  jsonwebtoken = require (`jsonwebtoken`)
 const {default:mongoose} = require('mongoose');
 
 
@@ -39,8 +39,104 @@ const createUser = async(req,res)=>{
 
 };
 
+const autentificar = async ( req, res)=>{
+    let cuerpoRequest = req.body;
+    User.findOne({ "username":cuerpoRequest.username});
+
+    const _user = await User.findOne({username:cuerpoRequest.username});
+     if(_user){
+        console.log("Usuario encontrado");
+         let passwordGuardado = _user.password;
+         bcrypt.compare(cuerpoRequest.password, passwordGuardado,(err, result)=>{
+            if(result ===false){
+                return res.status(401).json({
+                    msg:"Contraseña incorrecta"
+                });
+            }else{
+                console.log("Contraseña correcta")
+                const payload = {
+                    user:_user
+                };
+
+                const token =jwt.sing(payload,`Raton%020400%`,{ expiresin: `10`})
+                res.status(200).json({
+                    msg:"Usuarios autentificado",
+                    username:_user.username,
+                    roles:_user.role,
+                    token:token
+                });
+
+         }
+         })
+       
+     }else{
+        console.log("Usuario no encontrado");
+        res.status(404).json({
+            msg:"Usuario no encontrado"
+        });
+     }
+
+};
+
+const getAll = async (req, res)=>{
+const usuarios= await    User.find({});
+res.status(200).json({
+    usuarios:usuarios
+})
+};
+  
+const getUser = async (req, res)=>{
+    console. log(req.params);
+  const _id = req.params.id;
+    const usuarioEncontrado =  await User.find({ id :_id},{username:1, role:1});
+    if(usuarioEncontrado){
+        res.status(200).json({
+    usuario:usuarioEncontrado
+        }); 
+  };
+};
+
+
+const updateUser = async  (req, res)=>{
+    let cuerpoRequest = req.body;
+
+    return User.UpdeteOne (
+        {_id:req.params.id},
+        {  $set:{
+            username:cuerpoRequest.username,
+            role:cuerpoRequest.role
+        } }
+    ).then(result=>{
+        res.status(200).json({
+            msg:"Usuario Actualizado"
+        });
+    })
+};
+
+
+const eliminarUsuario = async (req, res)=>{
+    let cuerpoRequest = req.body;
+        return User.deleteOne(_id,id)
+        const eliminarUsuario =  await User.deleteOne({id:_id});
+    if(eliminarUsuario){
+        res.status(200).json({
+    usuario:eliminarUsuario
+        }); 
+  };
+}
+
+
+
+
+
 const router = express.Router();
 //endpoints
-router.route('/').post(createUser);
+router.route('/').post(createUser)
+                .get(getAll)
+                ;
 
+router.route(`/autentificar`).post(autentificar)
+router.route(`/:id`)
+                    .get(getUser)
+                    .patch(updateUser);
 module.exports = router;

@@ -1,7 +1,7 @@
 const express = require('express');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const  jsonwebtoken = require (`jsonwebtoken`)
+const jwt = require('jsonwebtoken');
 const {default:mongoose} = require('mongoose');
 
 
@@ -58,7 +58,7 @@ const autentificar = async ( req, res)=>{
                     user:_user
                 };
 
-                const token =jwt.sing(payload,`Raton%020400%`,{ expiresin: `10`})
+                const token =jwt.sign(payload,`Raton%020400%`,{ expiresIn: `10`})
                 res.status(200).json({
                     msg:"Usuarios autentificado",
                     username:_user.username,
@@ -113,17 +113,21 @@ const updateUser = async  (req, res)=>{
     })
 };
 
+const delateUser = async (req,res)=>{
+    console.log(req.params);
+    const id = req.params.id;
 
-const eliminarUsuario = async (req, res)=>{
-    let cuerpoRequest = req.body;
-        return User.deleteOne(_id,id)
-        const eliminarUsuario =  await User.deleteOne({id:_id});
-    if(eliminarUsuario){
+    const usuarioEliminado = await User.deleteOne({_id:id},{username:1, password:1, role:1});
+    if(usuarioEliminado){
         res.status(200).json({
-    usuario:eliminarUsuario
-        }); 
-  };
-}
+            usuarioEliminado:usuarioEliminado
+        });
+    }
+};
+
+
+
+
 
 
 
@@ -138,5 +142,6 @@ router.route('/').post(createUser)
 router.route(`/autentificar`).post(autentificar)
 router.route(`/:id`)
                     .get(getUser)
-                    .patch(updateUser);
+                    .patch(updateUser)
+                    .delete(delateUser);
 module.exports = router;
